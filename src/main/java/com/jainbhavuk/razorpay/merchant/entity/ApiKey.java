@@ -2,11 +2,18 @@ package com.jainbhavuk.razorpay.merchant.entity;
 
 import com.jainbhavuk.razorpay.common.enums.Environment;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Builder
+@Table(name = "api_key")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ApiKey {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
@@ -22,10 +29,15 @@ public class ApiKey {
     @Column(nullable = false, length = 255)
     private String keySecretHash;
 
+    @Column(nullable = false, length = 255)
+    private String previousKeySecretHash;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Environment environment;
 
+    @Builder.Default
+    @Column(nullable = false)
     private boolean enabled = true;
 
     private LocalDateTime lastUsedAt;

@@ -32,7 +32,7 @@ public class Merchant {
     @Enumerated(EnumType.STRING)
     private BusinessType businessType;
 
-    @Column(length = 255, nullable = false)
+    @Column(length = 255)
     private String websiteUrl;
 
     @Column(length = 100)
