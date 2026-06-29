@@ -1,5 +1,6 @@
 package com.jainbhavuk.razorpay.vault.entity;
 
+import com.jainbhavuk.razorpay.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -9,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "card_token")
-public class CardToken {
+public class CardToken extends BaseEntity {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     private UUID id;
@@ -26,12 +27,6 @@ public class CardToken {
 
     @Column(nullable = false)
     private UUID merchant;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
     private LocalDateTime revokedAt;
 }

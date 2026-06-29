@@ -1,5 +1,6 @@
 package com.jainbhavuk.razorpay.operations.entity;
 
+import com.jainbhavuk.razorpay.common.entity.BaseEntity;
 import com.jainbhavuk.razorpay.common.entity.Money;
 import com.jainbhavuk.razorpay.common.enums.SettlementStatus;
 import jakarta.persistence.*;
@@ -9,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "settlement")
-public class Settlement {
+public class Settlement extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)

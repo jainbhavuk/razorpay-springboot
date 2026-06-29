@@ -1,5 +1,6 @@
 package com.jainbhavuk.razorpay.operations.entity;
 
+import com.jainbhavuk.razorpay.common.entity.BaseEntity;
 import com.jainbhavuk.razorpay.common.enums.WebhookEventStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,7 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-public class WebhookEvent {
+public class WebhookEvent extends BaseEntity {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     private UUID id;
@@ -44,12 +45,6 @@ public class WebhookEvent {
 
     private LocalDateTime nextRetryAt;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
     private LocalDateTime deliveredAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
 }

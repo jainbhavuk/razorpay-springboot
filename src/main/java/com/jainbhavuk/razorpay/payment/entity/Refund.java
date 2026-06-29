@@ -1,8 +1,10 @@
 package com.jainbhavuk.razorpay.payment.entity;
 
+import com.jainbhavuk.razorpay.common.entity.BaseEntity;
 import com.jainbhavuk.razorpay.common.entity.Money;
 import com.jainbhavuk.razorpay.common.enums.RefundStatus;
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -14,7 +16,12 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-public class Refund {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Refund extends BaseEntity {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     private UUID id;
@@ -48,6 +55,4 @@ public class Refund {
 
     private LocalDateTime processedAt;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
 }

@@ -1,9 +1,11 @@
 package com.jainbhavuk.razorpay.payment.entity;
 
+import com.jainbhavuk.razorpay.common.entity.BaseEntity;
 import com.jainbhavuk.razorpay.common.entity.Money;
 import com.jainbhavuk.razorpay.common.enums.PaymentMethod;
 import com.jainbhavuk.razorpay.common.enums.PaymentStatus;
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -14,8 +16,14 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table(name = "payment")
-public class Payment {
+@Table(name = "payment", indexes = {
+        @Index(name = "idx_payment_order_id", columnList = "order_id"),
+        @Index(name = "idx_payment_merchant_id", columnList = "merchant_id")
+})
+@Getter
+@Setter
+@NoArgsConstructor
+public class Payment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     private UUID id;
@@ -38,6 +46,7 @@ public class Payment {
     private PaymentStatus status;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private PaymentMethod method;
 
     @JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
@@ -63,9 +72,4 @@ public class Payment {
 
     private LocalDateTime settledAt;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 }

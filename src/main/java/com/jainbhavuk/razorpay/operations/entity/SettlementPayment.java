@@ -1,5 +1,6 @@
 package com.jainbhavuk.razorpay.operations.entity;
 
+import com.jainbhavuk.razorpay.common.entity.BaseEntity;
 import com.jainbhavuk.razorpay.common.entity.SettlementPaymentId;
 import jakarta.persistence.*;
 

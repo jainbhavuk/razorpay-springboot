@@ -1,14 +1,23 @@
 package com.jainbhavuk.razorpay.merchant.entity;
 
+import com.jainbhavuk.razorpay.common.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "merchant_webhook_config")
-public class MerchantWebhookConfig {
+@Table(name = "merchant_webhook_config", indexes = {
+        @Index(name = "idx_webhook_merchant_id", columnList = "merchant_id, enabled")
+})
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class MerchantWebhookConfig extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
@@ -29,8 +38,5 @@ public class MerchantWebhookConfig {
 
     @Column(length = 255)
     private String webhookSecretHash;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
 
 }

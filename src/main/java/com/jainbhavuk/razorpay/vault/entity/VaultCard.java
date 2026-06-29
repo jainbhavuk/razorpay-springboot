@@ -1,5 +1,6 @@
 package com.jainbhavuk.razorpay.vault.entity;
 
+import com.jainbhavuk.razorpay.common.entity.BaseEntity;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -8,7 +9,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "vault_card")
-public class VaultCard {
+public class VaultCard extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
@@ -39,6 +40,4 @@ public class VaultCard {
     private String cardHolderName;
 
     private LocalDateTime deletedAt;
-
-
 }
