@@ -9,7 +9,7 @@ public record ApiKeyResponse(
         UUID id,
         String keyId,
         Environment environment,
-        Boolean isEnabled,
+        Boolean enabled,
         LocalDateTime createdAt,
         LocalDateTime lastUsedAt) {
 }

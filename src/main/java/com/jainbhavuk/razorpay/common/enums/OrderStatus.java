@@ -2,11 +2,7 @@ package com.jainbhavuk.razorpay.common.enums;
 
 public enum OrderStatus {
     CREATED,
+    ATTEMPTED,
     PAID,
-    AUTHORIZED,
-    CANCELLED,
-    FAILED,
-    REFUNDED,
-    PARTIAL_REFUNDED,
-    CAPTURED
+    CANCELLED
 }
