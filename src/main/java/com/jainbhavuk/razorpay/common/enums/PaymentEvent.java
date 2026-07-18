@@ -1,6 +1,6 @@
 package com.jainbhavuk.razorpay.common.enums;
 
-public enum PayementEvent {
+public enum PaymentEvent {
     AUTHORIZE_ATTEMPT,
     AUTHORIZE_SUCCESS,
     AUTHORIZE_FAIL,

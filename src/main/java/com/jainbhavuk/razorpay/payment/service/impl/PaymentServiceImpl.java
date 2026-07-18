@@ -1,6 +1,7 @@
 package com.jainbhavuk.razorpay.payment.service.impl;
 
 import com.jainbhavuk.razorpay.common.enums.OrderStatus;
+import com.jainbhavuk.razorpay.common.enums.PaymentEvent;
 import com.jainbhavuk.razorpay.common.enums.PaymentStatus;
 import com.jainbhavuk.razorpay.common.exception.BusinessRuleViolationException;
 import com.jainbhavuk.razorpay.common.exception.ResourceNotFoundException;
@@ -15,12 +16,14 @@ import com.jainbhavuk.razorpay.payment.mapper.PaymentMapper;
 import com.jainbhavuk.razorpay.payment.repository.OrderRepository;
 import com.jainbhavuk.razorpay.payment.repository.PaymentRepository;
 import com.jainbhavuk.razorpay.payment.service.PaymentService;
+import com.jainbhavuk.razorpay.payment.statemachine.PaymentTransitionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -33,6 +36,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final OrderRepository orderRepository;
     private final PaymentGatewayRouter paymentGatewayRouter;
     private final PaymentMapper paymentMapper;
+    private final PaymentTransitionService paymentTransitionService;
 
     @Override
     @Transactional
@@ -73,7 +77,7 @@ public class PaymentServiceImpl implements PaymentService {
             newPayment.setProcessorReference(pending.registrationReference());
 
         } else if(paymentResult instanceof PaymentResult.Failure failure) {
-            newPayment.setStatus(PaymentStatus.FAILED);
+            paymentTransitionService.apply(newPayment, PaymentEvent.AUTHORIZE_FAIL);
             newPayment.setErrorCode(failure.errorCode());
             newPayment.setErrorDescription(failure.errorDescription());
         }
@@ -82,5 +86,36 @@ public class PaymentServiceImpl implements PaymentService {
         orderRepository.save(order);
  
         return paymentMapper.toResponse(newPayment);
+    }
+
+    @Override
+    public PaymentResponse capture(UUID merchantId, UUID paymentId) {
+        Payment payment = paymentRepository.findByIdAndMerchantId(paymentId, merchantId).orElseThrow(
+                () -> new ResourceNotFoundException("PAYMENT", paymentId)
+        );
+
+        paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_REQUEST);
+
+        PaymentResult paymentResult = paymentGatewayRouter.capture(payment.getMethod(), paymentId);
+
+        if(paymentResult instanceof PaymentResult.Success){
+
+            paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_SUCCESS);
+            payment.setCapturedAt(LocalDateTime.now());
+
+            log.info("Payment captured successfully for paymentId: {}", paymentId);
+
+        } else if(paymentResult instanceof PaymentResult.Failure)
+        {
+            paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_FAIL);
+            payment.setErrorCode(((PaymentResult.Failure) paymentResult).errorCode());
+            payment.setErrorDescription(((PaymentResult.Failure) paymentResult).errorDescription());
+
+            log.warn("Payment capture failed for paymentId: {}", paymentId);
+        }
+
+         payment = paymentRepository.save(payment);
+
+         return paymentMapper.toResponse(payment);
     }
 }
