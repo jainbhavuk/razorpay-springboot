@@ -2,6 +2,7 @@ package com.jainbhavuk.razorpay.vault.entity;
 
 import com.jainbhavuk.razorpay.common.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -10,6 +11,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "card_token")
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CardToken extends BaseEntity {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)

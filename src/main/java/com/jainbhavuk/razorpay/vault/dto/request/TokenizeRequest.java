@@ -25,6 +25,9 @@ public record TokenizeRequest(
         @ExpiryYear(message = "Expiry year must be a valid current or future year")
         Integer expiryYear,
 
-        UUID customerId
+        UUID customerId,
+
+        @Size(min = 3, message = "Card holder name must be at least 3 characters long")
+        String cardHolderName
 ) {
 }

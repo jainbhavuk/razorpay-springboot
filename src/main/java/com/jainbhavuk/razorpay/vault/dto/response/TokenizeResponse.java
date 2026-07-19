@@ -6,7 +6,7 @@ public record TokenizeResponse(
         String token,
         String lastFour,
         CardBrand brand,
-        Integer expiryMonth,
-        Integer expiryYear
+        String  expiryMonth,
+        String expiryYear
 ) {
 }
