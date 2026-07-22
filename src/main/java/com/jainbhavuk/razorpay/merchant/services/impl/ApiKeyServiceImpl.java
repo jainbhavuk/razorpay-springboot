@@ -11,6 +11,7 @@ import com.jainbhavuk.razorpay.merchant.mapper.ApiKeyMapper;
 import com.jainbhavuk.razorpay.merchant.repository.ApiKeyRepository;
 import com.jainbhavuk.razorpay.merchant.repository.MerchantRepository;
 import com.jainbhavuk.razorpay.merchant.services.ApiKeyService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     private final ApiKeyRepository apiKeyRepository;
     private final MerchantRepository merchantRepository;
     private final ApiKeyMapper apiKeyMapper;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     public ApiKeyCreateResponse create(UUID merchantId, ApiKeyCreateRequest request) {
         Merchant merchant = merchantRepository.findById(merchantId).orElseThrow(() -> new ResourceNotFoundException("Merchant", merchantId));
@@ -36,7 +38,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 
         ApiKey apiKey = ApiKey.builder()
                 .keyId(key)
-                .keySecretHash(rawSecret)
+                .keySecretHash(bCryptPasswordEncoder.encode(rawSecret))
                 .environment(request.environment())
                 .merchant(merchant)
                 .build();
@@ -72,7 +74,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
             String rawSecret = RandomizerUtil.randomBase64(40);
 
             apiKey.setPreviousKeySecretHash(apiKey.getKeySecretHash());
-            apiKey.setKeySecretHash(rawSecret);
+            apiKey.setKeySecretHash(bCryptPasswordEncoder.encode(rawSecret));
             apiKey.setRotatedAt(LocalDateTime.now());
             apiKey.setGracePeriodExpiresAt(LocalDateTime.now().plusHours(24));
 
