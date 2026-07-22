@@ -41,7 +41,7 @@ public class Payment extends BaseEntity {
     @Embedded
     private Money amount;
 
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String idempotencyKey;
 
     @Enumerated(EnumType.STRING)

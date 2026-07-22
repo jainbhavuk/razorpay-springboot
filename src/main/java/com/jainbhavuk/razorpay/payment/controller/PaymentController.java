@@ -20,7 +20,7 @@ import java.util.UUID;
 public class PaymentController {
 
     private final PaymentService paymentService;
-    private final String merchantId = "ff777102-f2a1-4816-8689-52bedb9bac60";
+    private final String merchantId = "f14bf9ff-d32c-43b3-bc7d-173f2935f4f7";
 
     @PostMapping
     public ResponseEntity<PaymentResponse> initiatePayment(@Valid @RequestBody PaymentInitRequest request) {

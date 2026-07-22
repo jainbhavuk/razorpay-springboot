@@ -24,6 +24,7 @@ public class PaymentTransitionService {
                 .payment(payment)
                 .fromStatus(payment.getStatus())
                 .toStatus(next)
+                .occuredAt(java.time.LocalDateTime.now())
                 .event(paymentEvent)
                 .actor(PaymentActor.SYSTEM)
                 .build());

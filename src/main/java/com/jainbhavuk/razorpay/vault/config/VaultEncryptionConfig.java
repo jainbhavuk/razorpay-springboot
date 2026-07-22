@@ -22,7 +22,8 @@ public class VaultEncryptionConfig {
 
     @Bean
     public AesBytesEncryptor dekEncryptor() {
-        byte[] masterKeyBytes = Base64.getDecoder().decode(masterKey);
+//        byte[] masterKeyBytes = Base64.getDecoder().decode(masterKey);
+        byte[] masterKeyBytes = masterKey.getBytes();
         return panEncryptor(masterKeyBytes);
     }
 }

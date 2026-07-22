@@ -1,6 +1,7 @@
 package com.jainbhavuk.razorpay.payment.config;
 
 import com.jainbhavuk.razorpay.common.enums.PaymentMethod;
+import com.jainbhavuk.razorpay.payment.gateway.adapter.NetBankingAdapter;
 import com.jainbhavuk.razorpay.payment.gateway.adapter.PaymentAdapter;
 import com.jainbhavuk.razorpay.payment.gateway.adapter.CardPaymentAdapter;
 import com.jainbhavuk.razorpay.payment.gateway.adapter.UpiPaymentAdapter;
@@ -16,7 +17,7 @@ public class PaymentAdapterConfig {
 
     private final CardPaymentAdapter cardPaymentAdapter;
     private final UpiPaymentAdapter upiPaymentAdapter;
-    private final UpiPaymentAdapter netBankingPaymentAdapter;
+    private final NetBankingAdapter netBankingPaymentAdapter;
 
     @Bean
     public Map<PaymentMethod, PaymentAdapter> paymentAdapterMap() {
