@@ -15,4 +15,5 @@ import java.util.UUID;
 public class MerchantContext {
     private String email;
     private UUID merchantId;
+    private String keyId;
 }

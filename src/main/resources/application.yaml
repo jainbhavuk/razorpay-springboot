@@ -18,7 +18,7 @@ spring:
       org.hibernate.orm.jdbc.bind: TRACE
 
 vault:
-  master-key: dasldjslkadjklsajdlknlkclkasji3jirlnasdjlkasjdlksajdl
+  master-key: WcYKlOH13XYzWvqPDNz9T96MisWn4BPqrnjTd6p/91U=
 
 payment:
   simulator:

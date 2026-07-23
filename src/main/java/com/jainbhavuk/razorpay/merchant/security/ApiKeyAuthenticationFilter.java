@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -32,43 +33,53 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
     private final ApiKeyRepository apiKeyRepository;
     private final MerchantContext merchantContext;
+    private final HandlerExceptionResolver handlerExceptionResolver;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
 
-        if(authHeader == null || !authHeader.startsWith(BASIC_PREFIX)) {
-           filterChain.doFilter(request, response);
-           return;
-        }
+        try {
 
-        String[] credentials = decodeHeader(authHeader);
-        if(credentials == null) {
-            throw new BadRequestException("Malformed API Key Header");
-        }
+            String authHeader = request.getHeader("Authorization");
 
-        String keyId = credentials[0];
-        String rawSecret = credentials[1];
+            if (authHeader == null || !authHeader.startsWith(BASIC_PREFIX)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
 
-        ApiKey apiKey = apiKeyRepository.findByKeyId(keyId).orElseThrow(() ->
-                new BadRequestException("API Key Invalid")
-                );
+            String[] credentials = decodeHeader(authHeader);
+            if (credentials == null) {
+                throw new BadRequestException("Malformed API Key Header");
+            }
 
+            String keyId = credentials[0];
+            String rawSecret = credentials[1];
 
-
-        if(bCryptPasswordEncoder.matches(rawSecret, apiKey.getKeySecretHash())) {
-            Authentication auth = new UsernamePasswordAuthenticationToken(keyId, null,
-                    List.of(new SimpleGrantedAuthority("ROLE_API_KEY"))
+            ApiKey apiKey = apiKeyRepository.findByKeyId(keyId).orElseThrow(() ->
+                    new BadRequestException("API Key Invalid")
             );
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            log.info("Before Setting Merchant Context via API Key");
+            if (!apiKey.isEnabled() || !secretMatches(rawSecret, apiKey)) {
+                throw new BadRequestException("API Key not valid");
+            }
 
-            merchantContext.setMerchantId(apiKey.getMerchant().getId());
+            if (bCryptPasswordEncoder.matches(rawSecret, apiKey.getKeySecretHash())) {
+                Authentication auth = new UsernamePasswordAuthenticationToken(keyId, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_API_KEY"))
+                );
 
-            log.info("Merchant Context (API KEY) Set For Merchant ID: {}", merchantContext.getMerchantId());
+                SecurityContextHolder.getContext().setAuthentication(auth);
+                log.info("Before Setting Merchant Context via API Key");
 
-            filterChain.doFilter(request, response);
+                merchantContext.setMerchantId(apiKey.getMerchant().getId());
+                merchantContext.setKeyId(keyId);
+
+                log.info("Merchant Context (API KEY) Set For Merchant ID: {}", merchantContext.getMerchantId());
+
+                filterChain.doFilter(request, response);
+            }
+        } catch (Exception e) {
+            handlerExceptionResolver.resolveException(request,response,null,e);
         }
     }
 
